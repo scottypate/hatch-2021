@@ -25,7 +25,7 @@ from tensorflow.python.client import device_lib
 # Verify GPU device is recognized
 print(device_lib.list_local_devices())
 
-app_dir = os.path.dirname(os.path.dirname(__file__))
+app_dir = os.path.dirname(__file__)
 # Read in all Atlantic hurricane data
 hurricanes = pd.read_csv(app_dir + '/data/atlantic_hurricanes.csv')
 
@@ -107,7 +107,7 @@ def pad_sequence(data):
         value=0.0
     )
                    
-    return padded
+    return padded.astype('float32')
 
 # Build the layer structures of the RNN
 def build_structure():
@@ -185,11 +185,4 @@ model.fit(
     validation_split=0.2
 )
 
-print(model.predict_classes(post_test_x))
-print(post_test_y)
-
-model_json = model.to_json()
-with open(app_dir + "/models/model.json", "w") as json_file:
-    json_file.write(model_json)
-model.save_weights("model.h5")
-print("Saved model to disk")
+print(np.argmax(model.predict(post_test_x), axis=-1))
